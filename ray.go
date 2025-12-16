@@ -1,0 +1,18 @@
+// Ray is the concept that represents a line of sight or light path in 3D space
+// It is a laser pointer shooting from the camera into the scene
+
+// Point(t)=Origin+t⋅Direction t is greater or equals to zero // t=1 is one unit along the direction
+
+package main
+
+type Ray struct {
+	Origin, Direction Vector
+}
+
+func (r Ray) PointAt(t float64) Vector {
+	return r.Origin.Add(r.Direction.Mul(t))
+}
+
+// we can impelenment refract, relect , transform matrix as well lets leave it for now
+
+
