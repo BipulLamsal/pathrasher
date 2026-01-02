@@ -3,13 +3,16 @@
 
 // Point(t)=Origin+t⋅Direction t is greater or equals to zero // t=1 is one unit along the direction
 
-package main
+package geometry 
+
+import "pathrasher/ptmath"
+
 
 type Ray struct {
-	Origin, Direction Vector
+	Origin, Direction ptmath.Vector
 }
 
-func (r Ray) PointAt(t float64) Vector {
+func (r Ray) At(t float64) ptmath.Vector {
 	return r.Origin.Add(r.Direction.Mul(t))
 }
 
