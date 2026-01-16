@@ -1,4 +1,4 @@
-package ptmath 
+package ptmath
 
 import "math"
 
@@ -53,4 +53,3 @@ func (v Vector) Normalize() Vector {
 	}
 	return v.Mul(1 / len)
 }
-
