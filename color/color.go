@@ -1,19 +1,14 @@
-package color
-
-import (
-	"fmt"
-	"io"
-)
+package color 
 
 type Color struct {
 	R, G, B float64
 }
 
 var (
-	Gray = Color{0.5, 0.5, 0.5}
-	Red  = Color{1.0, 0.0, 0.0}
-	Blue = Color{0.0, 0.0, 1.0}
-)
+ Gray = Color{0.5, 0.5, 0.5}
+ Red = Color{1.0, 0.0, 0.0}
+ Blue = Color{0.0, 0.0, 1.0}
+ )
 
 func (c *Color) RGB() (byte, byte, byte) {
 	clamp := func(x float64) float64 {
@@ -33,13 +28,14 @@ func (c *Color) RGB() (byte, byte, byte) {
 	return r, g, b
 }
 
+
 func (c *Color) Add(o Color) {
 	c.R += o.R
 	c.G += o.G
 	c.B += o.B
 }
 
-func (c *Color) Normalize() {
+func (c *Color) Normalize(){
 	c.R /= 255.0
 	c.G /= 255.0
 	c.B /= 255.0
@@ -53,9 +49,4 @@ func (c *Color) MulScalar(t float64) {
 
 func (c *Color) MulColor(o Color) Color {
 	return Color{c.R * o.R, c.G * o.G, c.B * o.B}
-}
-
-func WriteColor(out io.Writer, c Color) {
-	r, g, b := c.RGB()
-	fmt.Fprintf(out, "%d %d %d\n", r, g, b)
 }
