@@ -79,7 +79,7 @@ func (c *Camera) Render(out io.Writer, world geometry.Hittable) {
 					Add(c.pixelDeltaV.Mul(vOffset))
 				rayDirection := samplePoint.Sub(c.center)
 				r := geometry.Ray{Origin: c.center, Direction: rayDirection}
-				pixelColor.Add(rayColor(&r, world, 50))
+				pixelColor.Add(rayColor(&r, world, 100))
 			}
 			pixelColor.MulScalar(1.0 / float64(c.SamplesPerPixel))
 
@@ -91,13 +91,13 @@ func (c *Camera) Render(out io.Writer, world geometry.Hittable) {
 
 func rayColor(r *geometry.Ray, world geometry.Hittable, depth int) color.Color {
 	if depth <= 0 {
-		return color.Color{0, 0, 0}
+		return color.Color{}
 	}
 	rec := geometry.HitRecord{}
-	if world.Hit(r, 0, math.Inf(1), &rec) {
+	if world.Hit(r, 0.001, math.Inf(1), &rec) {
 		direction := rec.RandomOn()
 		result := rayColor(&geometry.Ray{Origin: rec.Point, Direction: direction}, world, depth-1)
-		result.MulScalar(0.5)
+		result.MulScalar(0.02)
 		return result
 		// n := rec.Normal
 		// // 0.5 * (rec.Normal + 1.0)

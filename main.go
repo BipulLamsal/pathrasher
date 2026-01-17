@@ -18,11 +18,11 @@ func check(e error, s string) {
 func main() {
 	world := geometry.World{}
 	world.Add(&geometry.Sphere{
-		Center: ptmath.Vector{X: 0, Y: 0, Z: -3},
-		Radius: 2,
+		Center: ptmath.Vector{X: 0, Y: 0, Z: -1},
+		Radius: 0.5,
 	})
 	world.Add(&geometry.Sphere{
-		Center: ptmath.Vector{X: 0, Y: -120.5, Z: -20},
+		Center: ptmath.Vector{X: 0, Y: -100.5, Z: -1},
 		Radius: 100,
 	})
 

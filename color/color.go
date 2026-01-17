@@ -3,6 +3,7 @@ package color
 import (
 	"fmt"
 	"io"
+	"math"
 )
 
 type Color struct {
@@ -26,9 +27,9 @@ func (c *Color) RGB() (byte, byte, byte) {
 		return x
 	}
 
-	r := byte(255.999 * clamp(c.R))
-	g := byte(255.999 * clamp(c.G))
-	b := byte(255.999 * clamp(c.B))
+	r := byte(255.999 * clamp(math.Sqrt(c.R)))
+	g := byte(255.999 * clamp(math.Sqrt(c.G)))
+	b := byte(255.999 * clamp(math.Sqrt(c.B)))
 
 	return r, g, b
 }
