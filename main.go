@@ -18,17 +18,18 @@ func check(e error, s string) {
 func main() {
 	world := geometry.World{}
 	world.Add(&geometry.Sphere{
-		Center: ptmath.Vector{X: 0, Y: 0, Z: -1},
-		Radius: 0.5,
+		Center: ptmath.Vector{X: 0, Y: 0, Z: -3},
+		Radius: 2,
 	})
 	world.Add(&geometry.Sphere{
-		Center: ptmath.Vector{X: 0, Y: -100.5, Z: -1},
+		Center: ptmath.Vector{X: 0, Y: -120.5, Z: -20},
 		Radius: 100,
 	})
 
 	cam := camera.Camera{
-		AspectRatio: 16.0 / 9.0,
-		ImageWidth:  400,
+		AspectRatio:     16.0 / 9.0,
+		ImageWidth:      400,
+		SamplesPerPixel: 100,
 	}
 	cam.Initialize()
 
