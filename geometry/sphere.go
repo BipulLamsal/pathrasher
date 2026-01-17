@@ -5,12 +5,14 @@ package geometry
 
 import (
 	"math"
+	"pathrasher/color"
 	ptmath "pathrasher/ptmath"
 )
 
 type Sphere struct {
 	Center ptmath.Vector
 	Radius float64
+	Albedo color.Color
 }
 
 // to check the intersection of the line and the Sphere
@@ -45,6 +47,7 @@ func (s *Sphere) Hit(ray *Ray, tMin, tMax float64, rec *HitRecord) bool {
 	rec.Point = ray.At(root)
 	outwardNormal := rec.Point.Sub(s.Center).Mul(1 / float64(s.Radius))
 	rec.SetFaceNormal(ray, outwardNormal)
+	rec.Albedo = s.Albedo
 
 	return true
 }

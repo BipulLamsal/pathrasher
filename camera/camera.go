@@ -9,6 +9,8 @@ import (
 	"pathrasher/color"
 	"pathrasher/geometry"
 	"pathrasher/ptmath"
+	"runtime"
+	"sync"
 )
 
 type Camera struct {
@@ -63,27 +65,56 @@ func (c *Camera) Initialize() {
 func (c *Camera) Render(out io.Writer, world geometry.Hittable) {
 	fmt.Fprintf(out, "P3\n%d %d\n255\n", c.ImageWidth, c.imageHeight)
 
-	for j := 0; j < c.imageHeight; j++ {
-		fmt.Fprintf(os.Stderr, "\rScanlines remaining: %d ", c.imageHeight-j)
-		for i := 0; i < c.ImageWidth; i++ {
-			pixelColor := color.Color{}
-			pixelCenter := c.pixel00Loc.
-				Add(c.pixelDeltaU.Mul(float64(i))).
-				Add(c.pixelDeltaV.Mul(float64(j)))
+	pixels := make([][]color.Color, c.imageHeight)
+	for i := range pixels {
+		pixels[i] = make([]color.Color, c.ImageWidth)
+	}
+	var wg sync.WaitGroup
+	jobs := make(chan int, c.imageHeight)
 
-			for s := 0; s < c.SamplesPerPixel; s++ {
-				uOffset := rand.Float64()
-				vOffset := rand.Float64()
-				samplePoint := pixelCenter.
-					Add(c.pixelDeltaU.Mul(uOffset)).
-					Add(c.pixelDeltaV.Mul(vOffset))
-				rayDirection := samplePoint.Sub(c.center)
-				r := geometry.Ray{Origin: c.center, Direction: rayDirection}
-				pixelColor.Add(rayColor(&r, world, 100))
+	numWorkers := runtime.NumCPU()
+	fmt.Printf("Running with %d workers\n", numWorkers)
+
+	for w := 0; w < numWorkers; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+
+			for j := range jobs {
+				for i := 0; i < c.ImageWidth; i++ {
+					pixelColor := color.Color{}
+					pixelCenter := c.pixel00Loc.
+						Add(c.pixelDeltaU.Mul(float64(i))).
+						Add(c.pixelDeltaV.Mul(float64(j)))
+
+					for s := 0; s < c.SamplesPerPixel; s++ {
+						uOffset := rand.Float64()
+						vOffset := rand.Float64()
+						samplePoint := pixelCenter.
+							Add(c.pixelDeltaU.Mul(uOffset)).
+							Add(c.pixelDeltaV.Mul(vOffset))
+						rayDirection := samplePoint.Sub(c.center)
+						r := geometry.Ray{Origin: c.center, Direction: rayDirection}
+						pixelColor.Add(rayColor(&r, world, 50)) // Depth 50
+					}
+					pixelColor.MulScalar(1.0 / float64(c.SamplesPerPixel))
+					pixels[j][i] = pixelColor
+				}
 			}
-			pixelColor.MulScalar(1.0 / float64(c.SamplesPerPixel))
+		}()
+	}
 
-			color.WriteColor(out, pixelColor)
+	for j := 0; j < c.imageHeight; j++ {
+		jobs <- j
+	}
+	close(jobs)
+
+	wg.Wait()
+
+	for j := 0; j < c.imageHeight; j++ {
+		fmt.Fprintf(os.Stderr, "\rWriting scanlines remaining: %d ", c.imageHeight-j)
+		for i := 0; i < c.ImageWidth; i++ {
+			color.WriteColor(out, pixels[j][i])
 		}
 	}
 	fmt.Fprintln(os.Stderr, "\rDone.                 ")
@@ -95,17 +126,11 @@ func rayColor(r *geometry.Ray, world geometry.Hittable, depth int) color.Color {
 	}
 	rec := geometry.HitRecord{}
 	if world.Hit(r, 0.001, math.Inf(1), &rec) {
-		direction := rec.RandomOn()
+		direction := rec.RandomOn().Add(rec.Normal) // labartain
 		result := rayColor(&geometry.Ray{Origin: rec.Point, Direction: direction}, world, depth-1)
-		result.MulScalar(0.02)
-		return result
-		// n := rec.Normal
-		// // 0.5 * (rec.Normal + 1.0)
-		// return color.Color{
-		// 	R: 0.35 * (n.X + 1),
-		// 	G: 0.55 * (n.Y + 1),
-		// 	B: 0.30 * (n.Z + 1),
-		// }
+		finalColor := result.MulColor(rec.Albedo)
+		return finalColor
+
 	}
 
 	unitDirection := r.Direction.Normalize()

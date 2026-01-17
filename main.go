@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"pathrasher/camera"
+	"pathrasher/color"
 	"pathrasher/geometry"
 	"pathrasher/ptmath"
 )
@@ -20,10 +21,12 @@ func main() {
 	world.Add(&geometry.Sphere{
 		Center: ptmath.Vector{X: 0, Y: 0, Z: -1},
 		Radius: 0.5,
+		Albedo: color.Color{R: 0.7, G: 0.3, B: 0.3}, // Reddish for center
 	})
 	world.Add(&geometry.Sphere{
 		Center: ptmath.Vector{X: 0, Y: -100.5, Z: -1},
 		Radius: 100,
+		Albedo: color.Color{R: 0.8, G: 0.8, B: 0.0}, // Yellow-Green for ground
 	})
 
 	cam := camera.Camera{

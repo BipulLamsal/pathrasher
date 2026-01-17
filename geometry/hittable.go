@@ -1,12 +1,16 @@
 package geometry
 
-import "pathrasher/ptmath"
+import (
+	"pathrasher/color"
+	"pathrasher/ptmath"
+)
 
 type HitRecord struct {
 	Point     ptmath.Vector // Intersection point
 	Normal    ptmath.Vector // Surface normal at intersection
 	T         float64       // Distance along ray
 	FrontFace bool          // Did ray hit from outside?
+	Albedo    color.Color   // Color of the surface hit
 }
 
 // SetFaceNormal determines which side of the surface the ray hit

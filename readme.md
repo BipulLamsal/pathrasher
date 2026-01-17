@@ -27,7 +27,7 @@ What it means is:
 • not because light is physically splitting
 
 
-## Diffuse Stuff (Matte Surfaces)
+## Diffuse Stuff 
 When light hits something matte (like a ball or paper), it doesn't just bounce off perfectly like a mirror. It scatters in random directions.
 To simulate this, we:
 1. Find where the ray hits.
@@ -35,17 +35,16 @@ To simulate this, we:
 3. Shoot a new ray that way.
 4. Darken the color a bit (like 50%) to show that some light got absorbed.
 
-## Gamma Correction (Why is it dark?)
+## Gamma Correction 
 Screens are weird. If you tell a monitor to show "50% brightness" (0.5), it actually shows something that looks way darker (like 20% grey) to our eyes.
 If we don't fix this, our whole render looks muddy and crushed.
-**The Fix**: We "gamma correct" it. Basically, we take the square root of the color before saving it. This brightens up the mid-tones so they actually look right on screen.
+We "gamma correct" it. Basically, we take the square root of the color before saving it. This brightens up the mid-tones so they actually look right on screen.
 
-## Shadow Acne (The speckled dots bug)
-Computers aren't perfect at math. Sometimes when we calculate a hit point, the float value is just *slightly* off—like, 0.0000001 units inside the sphere.
-If we shoot the next ray from there, it immediately hits the *same* sphere again and thinks it's blocked. This causes ugly black dots everywhere (shadow acne).
-**The Hack**: We just ignore any hits that are super close to zero (anything less than 0.001). This lets the ray "escape" the surface.
+Computers aren't perfect at math. Sometimes when we calculate a hit point, the float value is just slightly off—like, 0.0000001 units inside the sphere.
+If we shoot the next ray from there, it immediately hits the same sphere again and thinks it's blocked. This causes ugly black dots everywhere (shadow acne).
+We just ignore any hits that are super close to zero (anything less than 0.001). This lets the ray "escape" the surface.
 
-## Lambertian vs Uniform (Making it look real)
+## Lambertian vs Uniform 
 * **Uniform**: Just picking a totally random direction. It works, but it's not quite how real physics works.
 * **Lambertian**: This is the upgraded version. We pick a direction that favors pointing "straight up" from the surface (using strict probability). This mimics how real objects scatter light more accurately.
 
